@@ -24,11 +24,7 @@ void gui_thread(void *p1, void *p2, void *p3) {
         printk("Error: display not ready\n");
         return;
     }
-    /*touch_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_touch));
-    if (!device_is_ready(touch_dev)) {
-        printk("Error: Touchscreen not ready\n");
-        return;
-    }*/
+    
     k_mutex_init(&gui_mutex); // Inizializza mutex per accesso thread-safe a LVGL
 
     // Sfondo della schermata attiva
@@ -143,11 +139,11 @@ static void btn_event_handler(lv_event_t * e) {
     lv_color_t current_bg_color = lv_obj_get_style_bg_color(obj, LV_STATE_DEFAULT);
 
     // Cambia il colore di sfondo in base al colore corrente
-    if (current_bg_color.red == 0 && current_bg_color.green == 255 && current_bg_color.blue == 0) {
-        // Se il colore è verde (0x00FF00), cambia a rosso (0xFF0000)
+    if (current_bg_color.red == 51 && current_bg_color.green == 51 && current_bg_color.blue == 170) {
+        // Se il colore è blu (0x3333AA), cambia a rosso (0xFF0000)
         lv_obj_set_style_bg_color(obj, lv_color_hex(0xFF0000), LV_STATE_DEFAULT);
     } else {
-        // Se il colore non è verde, cambia a verde
-        lv_obj_set_style_bg_color(obj, lv_color_hex(0x00FF00), LV_STATE_DEFAULT);
+        // Se il colore non è blu, cambia a rosso
+        lv_obj_set_style_bg_color(obj, lv_color_hex(0x3333AA), LV_STATE_DEFAULT);
     }
 }

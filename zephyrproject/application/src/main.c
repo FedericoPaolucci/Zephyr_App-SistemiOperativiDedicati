@@ -7,16 +7,13 @@ static struct k_thread gui_thread_data;                         ///< Dati del th
 
 K_THREAD_STACK_DEFINE(worker_stack, CONFIG_MAIN_STACK_SIZE);   ///< Stack per il thread Worker
 static struct k_thread worker_thread_data;                     ///< Dati del thread Worker
-//-------------------------------
-K_THREAD_STACK_DEFINE(worker_stack2, CONFIG_MAIN_STACK_SIZE);   ///< Stack per il thread Worker2
-static struct k_thread worker_thread_data2;                     ///< Dati del thread Worker2
 
-K_THREAD_STACK_DEFINE(worker_stack3, CONFIG_MAIN_STACK_SIZE);   ///< Stack per il thread Worker3
-static struct k_thread worker_thread_data3;                     ///< Dati del thread Worker3
+K_THREAD_STACK_DEFINE(worker_stack2, CONFIG_MAIN_STACK_SIZE);   ///< Stack per il thread Worker 2
+static struct k_thread worker_thread_data2;                     ///< Dati del thread Worker 2
 
-K_THREAD_STACK_DEFINE(worker_stack4, CONFIG_MAIN_STACK_SIZE);   ///< Stack per il thread Worker3
-static struct k_thread worker_thread_data4;                     ///< Dati del thread Worker3
-// ------------------------------------
+K_THREAD_STACK_DEFINE(led_controller_stack, CONFIG_MAIN_STACK_SIZE);   ///< Stack per il thread LED CONTROLLER
+static struct k_thread led_controller_data;                     ///< Dati del thread LED CONTROLLER
+
 // Coda per la comunicazione tra thread (max 10 messaggi, 4 byte per messaggio)
 K_MSGQ_DEFINE(gui_msgq, sizeof(gui_command_t), 10, 4);          ///< Coda dei messaggi per la GUI
 
@@ -47,41 +44,30 @@ void init_thread(void *arg1, void *arg2, void *arg3) {
     k_tid_t worker_tid = k_thread_create(&worker_thread_data, worker_stack,
                                          K_THREAD_STACK_SIZEOF(worker_stack),
                                          worker_thread,
-                                         NULL, NULL, NULL,
+                                         "Work_1", NULL, NULL,
                                          WORKER_PRIORITY, 0, K_NO_WAIT);
     register_thread("Worker", worker_tid);  ///< Registra il thread Worker
     
-    // ------------------------------- SOTTO THREAD DI TEST --------------------------------------
-    k_sleep(K_SECONDS(2));  ///< Attende 2 secondi prima di creare il thread Worker
+    k_sleep(K_SECONDS(2));  ///< Attende 2 secondi prima di creare il thread Worker 2
     
-    // Crea il thread Worker
+    // Crea il thread Worker 2
     k_tid_t worker_tid2 = k_thread_create(&worker_thread_data2, worker_stack2,
                                          K_THREAD_STACK_SIZEOF(worker_stack2),
                                          worker_thread,
-                                         NULL, NULL, NULL,
+                                         "Work_2", NULL, NULL,
                                          WORKER_PRIORITY, 0, K_NO_WAIT);
-    register_thread("Worker2", worker_tid2);  ///< Registra il thread Worker
+    register_thread("Worker2", worker_tid2);  ///< Registra il thread Worker 2
 
-    k_sleep(K_SECONDS(2));  ///< Attende 2 secondi prima di creare il thread Worker
+    k_sleep(K_SECONDS(2));  ///< Attende 2 secondi prima di creare il thread LED CONTROLLER
 
-    // Crea il thread Worker
-    k_tid_t worker_tid3 = k_thread_create(&worker_thread_data3, worker_stack3,
-                                         K_THREAD_STACK_SIZEOF(worker_stack3),
-                                         worker_thread,
+    // Crea il thread led controller
+    k_tid_t led_controller_tid = k_thread_create(&led_controller_data, led_controller_stack,
+                                         K_THREAD_STACK_SIZEOF(led_controller_stack),
+                                         led_controller_thread,
                                          NULL, NULL, NULL,
-                                         WORKER_PRIORITY, 0, K_NO_WAIT);
-    register_thread("Worker3", worker_tid3);  ///< Registra il thread Worker
+                                         LED_CTRL_PRIORITY, 0, K_NO_WAIT);
+    register_thread("Led_ctrl", led_controller_tid);  ///< Registra il thread led controller
 
-    k_sleep(K_SECONDS(2));  ///< Attende 2 secondi prima di creare il thread Worker
-
-    // Crea il thread Worker
-    k_tid_t worker_tid4 = k_thread_create(&worker_thread_data4, worker_stack4,
-                                         K_THREAD_STACK_SIZEOF(worker_stack4),
-                                         worker_thread,
-                                         NULL, NULL, NULL,
-                                         WORKER_PRIORITY, 0, K_NO_WAIT);
-    register_thread("Worker4", worker_tid4);  ///< Registra il thread Worker
-    //--------------------------------------------------------------------------------------------------
     k_sleep(K_SECONDS(2));  ///< Attende 2 secondi prima di terminare il thread di inizializzazione
     unregister_thread(init_tid);  ///< Deregistra il thread di inizializzazione
 

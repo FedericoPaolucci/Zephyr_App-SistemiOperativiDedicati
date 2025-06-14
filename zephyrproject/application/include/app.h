@@ -8,7 +8,10 @@
 #define RECT_SPACING    10  ///< Spaziatura tra i rettangoli nella GUI
 #define GUI_PRIORITY    5   ///< Priorità del thread GUI
 #define WORKER_PRIORITY 7   ///< Priorità del thread Worker
-#define MAX_TASKS       6   ///< Numero massimo di task monitorabili
+#define LED_CTRL_PRIORITY 7   ///< Priorità del thread LED_CONTROLLER
+#define LED_ON_PRIORITY 8   ///< Priorità del thread LED_ON
+#define LED_OFF_PRIORITY 8   ///< Priorità del thread LED_OFF
+#define MAX_TASKS       20   ///< Numero massimo di task monitorabili
 #define GUI_QUEUE_LEN   10  ///< Lunghezza della coda per i messaggi GUI
 #define BUTTON_HEIGHT 40
 #define BUTTON_SPACING 10
@@ -58,6 +61,12 @@ void gui_thread(void *p1, void *p2, void *p3);
  * Monitora i thread e aggiorna la GUI.
  */
 void worker_thread(void *p1, void *p2, void *p3);
+
+/** 
+ * @brief Funzione del thread LED CONTROLLER.
+ * Inizializza i threads per l'accensione/spegnimento dei LED
+ */
+void led_controller_thread(void *p1, void *p2, void *p3);
 
 /**
  * @brief Registra un thread nel sistema di monitoraggio.

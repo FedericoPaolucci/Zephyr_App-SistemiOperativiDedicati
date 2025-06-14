@@ -6,6 +6,7 @@ target_sources(app PRIVATE
   src/main.c
   src/gui.c
   src/worker.c
+  src/led_controller.c
   src/utils/monitor.c
 )
 
