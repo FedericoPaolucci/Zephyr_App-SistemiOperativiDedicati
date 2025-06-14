@@ -15,16 +15,14 @@ int monitored_thread_count = 0; ///< Contatore dei thread monitorati
  * @param tid ID del thread da registrare
  */
 void register_thread(const char *name, k_tid_t tid) {
+    k_mutex_lock(&monitored_threads_mutex, K_FOREVER); // Blocca l'accesso al mutex
     if (monitored_thread_count < MAX_TASKS) {
-        k_mutex_lock(&monitored_threads_mutex, K_FOREVER); // Blocca l'accesso al mutex
 
         // Aggiungi il thread all'array dei thread monitorati
         monitored_threads[monitored_thread_count].name = name;
         monitored_threads[monitored_thread_count].tid = tid;
         monitored_threads[monitored_thread_count].label = NULL;  // Inizializza la label a NULL
         monitored_thread_count++;  // Incrementa il contatore dei thread monitorati
-
-        k_mutex_unlock(&monitored_threads_mutex);  // Rilascia il mutex dopo l'operazione
 
         // Crea un messaggio di refresh per aggiornare la GUI con il nuovo thread
         gui_command_t cmd = {
@@ -36,6 +34,8 @@ void register_thread(const char *name, k_tid_t tid) {
         // Invia il comando di aggiornamento alla coda dei messaggi della GUI
         k_msgq_put(&gui_msgq, &cmd, K_NO_WAIT);
     }
+
+    k_mutex_unlock(&monitored_threads_mutex);  // Rilascia il mutex dopo l'operazione
 }
 
 /**

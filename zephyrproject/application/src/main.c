@@ -44,7 +44,7 @@ void init_thread(void *arg1, void *arg2, void *arg3) {
     k_tid_t worker_tid = k_thread_create(&worker_thread_data, worker_stack,
                                          K_THREAD_STACK_SIZEOF(worker_stack),
                                          worker_thread,
-                                         "Work_1", NULL, NULL,
+                                         "WORK_1", NULL, NULL,
                                          WORKER_PRIORITY, 0, K_NO_WAIT);
     register_thread("Worker", worker_tid);  ///< Registra il thread Worker
     
@@ -54,7 +54,7 @@ void init_thread(void *arg1, void *arg2, void *arg3) {
     k_tid_t worker_tid2 = k_thread_create(&worker_thread_data2, worker_stack2,
                                          K_THREAD_STACK_SIZEOF(worker_stack2),
                                          worker_thread,
-                                         "Work_2", NULL, NULL,
+                                         "WORK_2", NULL, NULL,
                                          WORKER_PRIORITY, 0, K_NO_WAIT);
     register_thread("Worker2", worker_tid2);  ///< Registra il thread Worker 2
 

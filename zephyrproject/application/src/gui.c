@@ -68,6 +68,7 @@ void gui_thread(void *p1, void *p2, void *p3) {
 
                 case GUI_CMD_WORKER_COUNT:
                     // Cerca il thread corrispondente e aggiorna la sua etichetta
+                    k_mutex_lock(&monitored_threads_mutex, K_FOREVER);
                     for (int i = 0; i < monitored_thread_count; i++) {
                         if (monitored_threads[i].tid == cmd.tid) {
                             // Aggiorna l'etichetta con il messaggio ricevuto
@@ -75,6 +76,7 @@ void gui_thread(void *p1, void *p2, void *p3) {
                             break;
                         }
                     }
+                    k_mutex_unlock(&monitored_threads_mutex);  // Rilascia il mutex dopo l'operazione
                     break;
             }
 
