@@ -15,7 +15,7 @@ static void btn_event_handler(lv_event_t * e);
 // Thread GUI: inizializza il display e costruisce la schermata grafica
 void gui_thread(void *p1, void *p2, void *p3) {
     const struct device *display;
-    const struct device *touch_dev;
+    // const struct device *touch_dev;
 
     lv_style_t rect_style;
 
@@ -24,11 +24,11 @@ void gui_thread(void *p1, void *p2, void *p3) {
         printk("Error: display not ready\n");
         return;
     }
-    touch_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_touch));
+    /*touch_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_touch));
     if (!device_is_ready(touch_dev)) {
         printk("Error: Touchscreen not ready\n");
         return;
-    }
+    }*/
     k_mutex_init(&gui_mutex); // Inizializza mutex per accesso thread-safe a LVGL
 
     // Sfondo della schermata attiva
@@ -36,7 +36,7 @@ void gui_thread(void *p1, void *p2, void *p3) {
     lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x000000), 0); // Sfondo nero
     lv_obj_set_style_bg_opa(lv_scr_act(), LV_OPA_COVER, 0); // Imposta l’opacità totale (copertura completa dello sfondo).
 
-    // contenitore per i thread
+    // contenitore per i thread (lo scrolling si attiva automaticamente se gli oggetti vanno fuori dallo schermo del contenitore)
     lv_obj_t *rect_container = lv_obj_create(scr);
     lv_obj_set_size(rect_container, LV_HOR_RES, LV_VER_RES - BUTTON_HEIGHT * 1.5 - RECT_SPACING * 2);
     lv_obj_align(rect_container, LV_ALIGN_TOP_MID, 0, 0);
@@ -45,6 +45,7 @@ void gui_thread(void *p1, void *p2, void *p3) {
     lv_obj_t *button_container = lv_obj_create(scr);
     lv_obj_set_size(button_container, LV_HOR_RES, BUTTON_HEIGHT * 1.5);
     lv_obj_align(button_container, LV_ALIGN_BOTTOM_MID, 0, -10);
+    lv_obj_move_background(button_container);  // Porta il contenitore dei pulsanti sopra gli altri oggetti
 
     // stile del rettangolo
     lv_style_init(&rect_style);
@@ -115,7 +116,7 @@ void create_buttons(lv_obj_t *button_container, lv_style_t *rect_style) {
     lv_obj_add_style(btn1, rect_style, 0); // Applica lo stile
     lv_obj_align(btn1, LV_ALIGN_LEFT_MID, 10, 0);
     lv_obj_t *btn_label1 = lv_label_create(btn1);
-    lv_label_set_text(btn_label1, "up");
+    lv_label_set_text(btn_label1, "btn one");
     lv_obj_set_style_text_color(btn_label1, lv_color_white(), 0); // Imposta il colore del testo
     lv_obj_center(btn_label1);
 
@@ -124,7 +125,7 @@ void create_buttons(lv_obj_t *button_container, lv_style_t *rect_style) {
     lv_obj_add_style(btn2, rect_style, 0); // Applica lo stile
     lv_obj_align(btn2, LV_ALIGN_RIGHT_MID, -10, 0);
     lv_obj_t *btn_label2 = lv_label_create(btn2);
-    lv_label_set_text(btn_label2, "down");
+    lv_label_set_text(btn_label2, "btn two");
     lv_obj_set_style_text_color(btn_label2, lv_color_white(), 0); // Imposta il colore del testo
     lv_obj_center(btn_label2);
 
@@ -135,11 +136,18 @@ void create_buttons(lv_obj_t *button_container, lv_style_t *rect_style) {
 
 // Gestore degli eventi dei pulsanti
 static void btn_event_handler(lv_event_t * e) {
-    lv_event_code_t code = lv_event_get_code(e);
-    lv_obj_t * obj = lv_event_get_target_obj(e);
+    //lv_event_code_t code = lv_event_get_code(e);
+    lv_obj_t *obj = lv_event_get_target_obj(e);
 
-    if (code == LV_EVENT_CLICKED) {
-        // Cambia il colore del pulsante premuto
-        lv_obj_set_style_bg_color(obj, lv_color_hex(0x00FF00), LV_STATE_DEFAULT); // Verde per esempio
+    // Ottieni il colore attuale di sfondo
+    lv_color_t current_bg_color = lv_obj_get_style_bg_color(obj, LV_STATE_DEFAULT);
+
+    // Cambia il colore di sfondo in base al colore corrente
+    if (current_bg_color.red == 0 && current_bg_color.green == 255 && current_bg_color.blue == 0) {
+        // Se il colore è verde (0x00FF00), cambia a rosso (0xFF0000)
+        lv_obj_set_style_bg_color(obj, lv_color_hex(0xFF0000), LV_STATE_DEFAULT);
+    } else {
+        // Se il colore non è verde, cambia a verde
+        lv_obj_set_style_bg_color(obj, lv_color_hex(0x00FF00), LV_STATE_DEFAULT);
     }
 }

@@ -2,3 +2,5 @@ pip3 install pyelftools
 
 west build -b stm32f429i_disc1 application --pristine
 west build -b stm32f429i_disc1 application
+
+// eliminare inverted-y dal device tree perchè altrimenti il touch dello schermo è invertito
