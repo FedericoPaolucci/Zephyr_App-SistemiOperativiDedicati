@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  zephyr:
+    build: .
+    volumes:
+      - .:/work
+    working_dir: /work
+    entrypoint: /work/entrypoint.sh
+    stdin_open: true
+    tty: true
