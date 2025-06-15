@@ -4,3 +4,10 @@ west build -b stm32f429i_disc1 application --pristine
 west build -b stm32f429i_disc1 application
 
 // eliminare inverted-y dal device tree perchè altrimenti il touch dello schermo è invertito
+
+Memory region         Used Size  Region Size  %age Used
+           FLASH:      159768 B         2 MB      7.62%
+             RAM:       78864 B       192 KB     40.11%
+             CCM:          0 GB        64 KB      0.00%
+          SDRAM2:        150 KB         8 MB      1.83%
+        IDT_LIST:          0 GB        32 KB      0.00%
